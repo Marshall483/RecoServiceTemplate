@@ -1,6 +1,5 @@
 import time
 
-import jwt
 from fastapi import FastAPI, Request
 from fastapi.requests import HTTPConnection
 from fastapi.responses import JSONResponse
@@ -14,8 +13,6 @@ from starlette.responses import Response
 from service.log import access_logger, app_logger
 from service.models import Error
 from service.response import server_error
-
-from ..settings import settings
 
 
 class AccessMiddleware(BaseHTTPMiddleware):
@@ -81,16 +78,6 @@ class JWTAuthBackend(AuthenticationBackend):
 
         if scheme.lower() != "bearer":
             raise AuthenticationError("Invalid authentication scheme")
-
-        try:
-            jwt.decode(
-                credentials,
-                key=settings.SECRET_KEY.get_secret_value(),
-                algorithms=[settings.ALGORITHM],
-                options={"verify_signature": True},
-            )
-        except Exception:
-            raise AuthenticationError("Invalid JWT token")
 
 
 class JWTAuthenticationMiddleware(AuthenticationMiddleware):
