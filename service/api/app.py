@@ -4,10 +4,11 @@ from typing import Any, Dict
 
 import uvloop
 from fastapi import FastAPI
-from log import app_logger, setup_logging
-from settings import ServiceConfig
 
 from middleware.auth import add_middlewares
+
+from ..log import app_logger, setup_logging
+from ..settings import ServiceConfig
 
 __all__ = ("create_app",)
 
