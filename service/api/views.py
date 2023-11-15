@@ -1,7 +1,7 @@
 import random
 from typing import List
 
-from fastapi import APIRouter, FastAPI, Request
+from fastapi import APIRouter, FastAPI, Request, status
 from pydantic import BaseModel
 
 from service.api.exceptions import ModelNotFoundError, UserNotFoundError
@@ -25,6 +25,17 @@ async def health() -> str:
     path="/reco/{model_name}/{user_id}",
     tags=["Recommendations"],
     response_model=RecoResponse,
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_403_FORBIDDEN: {
+            "model": Error,
+            "description": "Not enough privileges",
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "model": Message,
+            "description": "Model was not found",
+        }
+    }
 )
 async def get_reco(
     request: Request,

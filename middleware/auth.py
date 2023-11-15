@@ -1,3 +1,4 @@
+import jwt
 import time
 
 from fastapi import FastAPI, Request
@@ -9,6 +10,32 @@ from service.log import access_logger, app_logger
 from service.models import Error
 from service.response import server_error
 
+from fastapi.requests import HTTPConnection
+from fastapi.security.utils import get_authorization_scheme_param
+from starlette.authentication import AuthenticationBackend, AuthenticationError
+
+
+from core.settings import settings
+
+
+class JWTAuthBackend(AuthenticationBackend):
+    async def authenticate(self, conn: HTTPConnection):
+        authorization: str = conn.headers.get("Authorization")
+        if not authorization:
+            return None
+
+        scheme, credentials = get_authorization_scheme_param(authorization)
+        if not (authorization and scheme and credentials):
+            raise AuthenticationError("Not authentication")
+
+        if scheme.lower() != "bearer":
+            raise AuthenticationError("Invalid authentication scheme")
+
+        try:
+            jwt.decode(credentials, key=settings.SECRET_KEY.get_secret_value(), algorithms=[settings.ALGORITHM],
+                       options={"verify_signature": True})
+        except Exception:
+            raise AuthenticationError("Invalid JWT token")
 
 class AccessMiddleware(BaseHTTPMiddleware):
     async def dispatch(

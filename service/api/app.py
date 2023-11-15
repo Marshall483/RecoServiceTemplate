@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from ..log import app_logger, setup_logging
 from ..settings import ServiceConfig
 from .exception_handlers import add_exception_handlers
-from .middlewares import add_middlewares
+from ...middleware.auth import add_middlewares
 from .views import add_views
 
 __all__ = ("create_app",)
