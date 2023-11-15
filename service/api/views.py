@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 from service.log import app_logger
 
-from .exception import Error, Message, ModelNotFoundError, UserNotFoundError
+from .exception import Message, ModelNotFoundError, UserNotFoundError
 
 
 class RecoResponse(BaseModel):
@@ -17,7 +17,7 @@ class RecoResponse(BaseModel):
 router = APIRouter()
 
 
-@router.get(path="/health", tags=["Health"], response_model=RecoResponse)
+@router.get(path="/health", tags=["Health"], response_model=str)
 async def health() -> str:
     return "I am alive"
 
@@ -28,13 +28,13 @@ async def health() -> str:
     response_model=RecoResponse,
     status_code=status.HTTP_200_OK,
     responses={
-        status.HTTP_403_FORBIDDEN: {
-            "model": Error,
-            "description": "Not enough privileges",
-        },
         status.HTTP_404_NOT_FOUND: {
             "model": Message,
-            "description": "Model was not found",
+            "description": "Not found",
+        },
+        status.HTTP_401_UNAUTHORIZED: {
+            "model": Message,
+            "description": "Invalid token proveded",
         },
     },
 )
@@ -45,15 +45,15 @@ async def get_reco(
 ) -> RecoResponse:
     app_logger.info(f"Request for model: {model_name}, user_id: {user_id}")
 
+    if user_id > 10**9:
+        raise UserNotFoundError(error_message=f"User {user_id} not found")
+
     if model_name == "top":
         recomend = list(range(10))
     elif model_name == "random":
         recomend = [random.randint(0, 100) for _ in range(10)]
     else:
         raise ModelNotFoundError()
-
-    if user_id > 10**9:
-        raise UserNotFoundError(error_message=f"User {user_id} not found")
 
     return RecoResponse(user_id=user_id, items=recomend)
 
