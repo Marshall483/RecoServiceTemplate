@@ -1,6 +1,5 @@
 import asyncio
 from concurrent.futures.thread import ThreadPoolExecutor
-from typing import Any, Dict
 
 import uvloop
 from fastapi import FastAPI
@@ -16,12 +15,6 @@ def setup_asyncio(thread_name_prefix: str) -> None:
 
     executor = ThreadPoolExecutor(thread_name_prefix=thread_name_prefix)
     loop.set_default_executor(executor)
-
-    def handler(_, context: Dict[str, Any]) -> None:
-        message = "Caught asyncio exception: {message}".format_map(context)
-        app_logger.warning(message)
-
-    loop.set_exception_handler(handler)
 
 
 def create_app(config: ServiceConfig) -> FastAPI:
