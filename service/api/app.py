@@ -7,8 +7,6 @@ from fastapi import FastAPI
 from log import app_logger, setup_logging
 from settings import ServiceConfig
 
-from middleware.auth import add_middlewares
-
 __all__ = ("create_app",)
 
 
@@ -33,7 +31,5 @@ def create_app(config: ServiceConfig) -> FastAPI:
 
     app = FastAPI(debug=False)
     app.state.k_recs = config.k_recs
-
-    add_middlewares(app)
 
     return app
