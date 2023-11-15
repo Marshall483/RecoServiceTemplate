@@ -1,12 +1,9 @@
-import enum
-
 from pydantic import BaseModel
 
 
-class ModelNamesEnum(str, enum.Enum):
-    TEST = 'test'
+class Message(BaseModel):
+    message: str
 
 
-class ModelRetrieveSchema(BaseModel):
-    user_id: str
-    items: list[int]
+class Error(BaseModel):
+    detail: str
