@@ -3,11 +3,9 @@ from concurrent.futures.thread import ThreadPoolExecutor
 from typing import Any, Dict
 
 import uvloop
-from exception_handlers import add_exception_handlers
 from fastapi import FastAPI
 from log import app_logger, setup_logging
 from settings import ServiceConfig
-from views import add_views
 
 from middleware.auth import add_middlewares
 
@@ -36,8 +34,6 @@ def create_app(config: ServiceConfig) -> FastAPI:
     app = FastAPI(debug=False)
     app.state.k_recs = config.k_recs
 
-    add_views(app)
     add_middlewares(app)
-    add_exception_handlers(app)
 
     return app
