@@ -4,7 +4,6 @@ from typing import Any, Dict
 
 import uvloop
 from fastapi import FastAPI
-from log import app_logger, setup_logging
 from settings import ServiceConfig
 
 __all__ = ("create_app",)
@@ -26,7 +25,6 @@ def setup_asyncio(thread_name_prefix: str) -> None:
 
 
 def create_app(config: ServiceConfig) -> FastAPI:
-    setup_logging(config)
     setup_asyncio(thread_name_prefix=config.service_name)
 
     app = FastAPI(debug=False)
