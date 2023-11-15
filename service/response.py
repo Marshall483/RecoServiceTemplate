@@ -2,7 +2,6 @@ import json
 import typing as tp
 from http import HTTPStatus
 
-import orjson
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
@@ -14,7 +13,7 @@ class EnhancedJSONEncoder(json.JSONEncoder):
         if isinstance(o, BaseModel):
             return o.model_dump()
         try:
-            orjson.dumps(o)
+            json.dumps(o)
         except TypeError:
             return str(o)
         return super().default(o)
