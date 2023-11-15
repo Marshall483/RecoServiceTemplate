@@ -14,6 +14,7 @@ def test_health(
         response = client.get("/health")
     assert response.status_code == HTTPStatus.OK
 
+
 def test_get_reco_unknown_model_name(
     client: TestClient,
     service_config: ServiceConfig,
@@ -23,6 +24,7 @@ def test_get_reco_unknown_model_name(
     with client:
         response = client.get(path)
     assert response.status_code == HTTPStatus.NOT_FOUND
+
 
 def test_get_reco_success(
     client: TestClient,

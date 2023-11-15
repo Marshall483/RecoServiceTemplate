@@ -4,22 +4,27 @@ from typing import List
 from fastapi import APIRouter, FastAPI, Request, status
 from pydantic import BaseModel
 
+from schemas.base import Error, Message
 from service.api.exceptions import ModelNotFoundError, UserNotFoundError
 from service.log import app_logger
+
 
 class RecoResponse(BaseModel):
     user_id: int
     items: List[int]
 
+
 router = APIRouter()
+
 
 @router.get(
     path="/health",
     tags=["Health"],
 )
-
+@router.get(path="/health", tags=["Health"], response_model=RecoResponse)
 async def health() -> str:
     return "I am alive"
+
 
 @router.get(
     path="/reco/{model_name}/{user_id}",
@@ -34,8 +39,8 @@ async def health() -> str:
         status.HTTP_404_NOT_FOUND: {
             "model": Message,
             "description": "Model was not found",
-        }
-    }
+        },
+    },
 )
 async def get_reco(
     request: Request,

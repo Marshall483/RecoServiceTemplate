@@ -3,13 +3,13 @@ from concurrent.futures.thread import ThreadPoolExecutor
 from typing import Any, Dict
 
 import uvloop
+from exception_handlers import add_exception_handlers
 from fastapi import FastAPI
+from log import app_logger, setup_logging
+from settings import ServiceConfig
+from views import add_views
 
-from ..log import app_logger, setup_logging
-from ..settings import ServiceConfig
-from .exception_handlers import add_exception_handlers
-from ...middleware.auth import add_middlewares
-from .views import add_views
+from middleware.auth import add_middlewares
 
 __all__ = ("create_app",)
 
