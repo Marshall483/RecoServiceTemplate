@@ -1,6 +1,11 @@
 import time
 
 from fastapi import FastAPI, Request
+from fastapi.requests import HTTPConnection
+from fastapi.responses import JSONResponse
+from fastapi.security.utils import get_authorization_scheme_param
+from starlette.authentication import AuthenticationBackend, AuthenticationError
+from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import Response
@@ -59,3 +64,23 @@ def add_middlewares(app: FastAPI) -> None:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+
+class JWTAuthBackend(AuthenticationBackend):
+    async def authenticate(self, conn: HTTPConnection):
+        authorization: str = conn.headers.get("Authorization")
+        if not authorization:
+            return None
+
+        scheme, credentials = get_authorization_scheme_param(authorization)
+        if not (authorization and scheme and credentials):
+            raise AuthenticationError("Not authentication")
+
+        if scheme.lower() != "bearer":
+            raise AuthenticationError("Invalid authentication scheme")
+
+
+class JWTAuthenticationMiddleware(AuthenticationMiddleware):
+    @staticmethod
+    def default_on_error(conn: HTTPConnection, exc: Exception) -> JSONResponse:
+        return JSONResponse(status_code=403, content={"detail": str(exc)})

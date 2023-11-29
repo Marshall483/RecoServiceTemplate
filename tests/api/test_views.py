@@ -1,5 +1,6 @@
 from http import HTTPStatus
 
+from httpx import AsyncClient
 from starlette.testclient import TestClient
 
 from service.settings import ServiceConfig
@@ -20,7 +21,7 @@ def test_get_reco_success(
     service_config: ServiceConfig,
 ) -> None:
     user_id = 123
-    path = GET_RECO_PATH.format(model_name="some_model", user_id=user_id)
+    path = GET_RECO_PATH.format(model_name="top", user_id=user_id)
     with client:
         response = client.get(path)
     assert response.status_code == HTTPStatus.OK
@@ -39,3 +40,20 @@ def test_get_reco_for_unknown_user(
         response = client.get(path)
     assert response.status_code == HTTPStatus.NOT_FOUND
     assert response.json()["errors"][0]["error_key"] == "user_not_found"
+
+
+def test_get_reco_unknown_model_name(
+    client: TestClient,
+    service_config: ServiceConfig,
+) -> None:
+    user_id = 123
+    path = GET_RECO_PATH.format(model_name="unknown_model", user_id=user_id)
+    with client:
+        response = client.get(path)
+    assert response.status_code == HTTPStatus.NOT_FOUND
+
+
+async def test_invalid_auth_token_403_error(client: AsyncClient):
+    client.headers.update({"Authorization": "INVALID TOKEN"})
+    response = await client.get("/health")
+    assert response.status_code == HTTPStatus.UNAUTHORIZED, response.json()

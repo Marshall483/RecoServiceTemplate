@@ -11,7 +11,7 @@ from service.log import app_logger
 from service.models import Error
 from service.response import create_response, server_error
 
-from .exceptions import AppException
+from .exception import AppException
 
 
 async def default_error_handler(
