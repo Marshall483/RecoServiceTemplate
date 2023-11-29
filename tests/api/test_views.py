@@ -16,7 +16,7 @@ def test_health(
     assert response.status_code == HTTPStatus.OK
 
 
-def test_get_reco_success(
+async def test_get_reco_success(
     client: TestClient,
     service_config: ServiceConfig,
 ) -> None:
@@ -42,7 +42,7 @@ def test_get_reco_for_unknown_user(
     assert response.json()["errors"][0]["error_key"] == "user_not_found"
 
 
-def test_get_reco_unknown_model_name(
+async def test_get_reco_unknown_model_name(
     client: TestClient,
     service_config: ServiceConfig,
 ) -> None:
