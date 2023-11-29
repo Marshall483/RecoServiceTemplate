@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import dill
-from api.exception import ModelNotFoundError
+from .api.exception import ModelNotFoundError
 
 
 class ModelService:
