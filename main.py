@@ -3,15 +3,24 @@ import uvicorn
 from functools import partial
 
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi import FastAPI
 from service.settings import settings
 from service.api.middlewares import JWTAuthBackend, JWTAuthenticationMiddleware
 from service.api.exception import json_exceptions_wrapper_middleware
 from service.api.app import create_app
 from service.settings import get_config
+from contextlib import asynccontextmanager
+from .service import ModelService
 
 config = get_config()
 app = create_app(config)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    model_service = ModelService()
+    app.state.model_service = model_service
+    yield
+    app.state.model_service = None
 
 
 if __name__ == "__main__":
