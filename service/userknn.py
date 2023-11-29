@@ -28,9 +28,7 @@ class UserKnn:
         df: pd.DataFrame,
         user_col: str = "user_id",
         item_col: str = "item_id",
-        weight_col: str = None,
-        users_mapping: dict[int, int] = None,
-        items_mapping: dict[int, int] = None,
+        weight_col: str = None
     ):
         if weight_col:
             weights = df[weight_col].astype(np.float32)
@@ -50,13 +48,13 @@ class UserKnn:
     def idf(self, n: int, x: float):
         return np.log((1 + n) / (1 + x) + 1)
 
-    def _count_item_idf(self, df: pd.DataFrame):
+    def _count_item_idf(self, df):
         item_cnt = Counter(df["item_id"].values)
         item_idf = pd.DataFrame.from_dict(item_cnt, orient="index", columns=["doc_freq"]).reset_index()
         item_idf["idf"] = item_idf["doc_freq"].apply(lambda x: self.idf(self.n, x))
         self.item_idf = item_idf
 
-    def fit(self, train: pd.DataFrame):
+    def fit(self, train):
         self.user_knn = self.model
         self.get_mappings(train)
         self.weights_matrix = self.get_matrix(train, users_mapping=self.users_mapping, items_mapping=self.items_mapping)
@@ -68,7 +66,7 @@ class UserKnn:
         self.is_fitted = True
 
     def _generate_recs_mapper(
-        self, model: BM25Recommender, user_mapping: dict[int, int], user_inv_mapping: dict[int, int], N: int
+        self, model: BM25Recommender, N: int
     ):
         def _recs_mapper(user):
             user_id = self.users_mapping[user]
@@ -92,7 +90,7 @@ class UserKnn:
         recs = test[test.user_id.isin(self.users_mapping)]
         recs = pd.DataFrame({"user_id": recs["user_id"].unique()})
         if recs.empty:
-            return pd.DataFrame(columns=['item_id'])
+            return pd.DataFrame(columns=["item_id"])
 
         recs["similar_user_id"], recs["sim"] = zip(*recs["user_id"].map(mapper))
         recs = recs.set_index("user_id").apply(pd.Series.explode).reset_index()

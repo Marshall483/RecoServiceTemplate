@@ -1,13 +1,12 @@
-import random
 from typing import List
 
 from fastapi import APIRouter, FastAPI, Request, status
 from pydantic import BaseModel
 
 from service.log import app_logger
+from service.modelService import ModelService
 
 from .exception import Message, ModelNotFoundError, UserNotFoundError
-from service.modelService import ModelService
 
 
 class RecoResponse(BaseModel):
@@ -48,7 +47,7 @@ async def get_reco(
 
     if user_id > 10**9:
         raise UserNotFoundError(error_message=f"User {user_id} not found")
-    
+
     service: ModelService = request.app.state.model_service
 
     if model_name == "popular":
