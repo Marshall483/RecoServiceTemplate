@@ -20,6 +20,13 @@ class ModelService:
 
     def _load_popular_model(self):
         try:
+            with open(Path("", "./rc_rcts_ann.dill"), "rb") as f:
+                self.rc_rcts_ann = dill.load(f)
+        except Exception:
+            raise ModelNotFoundError
+
+    def _load_popular_model(self):
+        try:
             with open(Path("", "./popular.dill"), "rb") as f:
                 self.popular_model = dill.load(f)
         except Exception:
@@ -30,3 +37,6 @@ class ModelService:
 
     def get_popular_prediction(self):
         return list(self.popular_model.popularity_list[0][:10])
+    
+    def get_rc_rcts_ann(self):
+        return self.user_knn.recommend(int(id), N_recs=10)
