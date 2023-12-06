@@ -1,10 +1,10 @@
-import random
 from typing import List
 
 from fastapi import APIRouter, FastAPI, Request, status
 from pydantic import BaseModel
 
 from service.log import app_logger
+from service.modelService import ModelService
 
 from .exception import Message, ModelNotFoundError, UserNotFoundError
 
@@ -48,10 +48,12 @@ async def get_reco(
     if user_id > 10**9:
         raise UserNotFoundError(error_message=f"User {user_id} not found")
 
-    if model_name == "top":
-        recomend = list(range(10))
-    elif model_name == "random":
-        recomend = [random.randint(0, 100) for _ in range(10)]
+    service: ModelService = request.app.state.model_service
+
+    if model_name == "popular":
+        recomend = service.get_popular_prediction()
+    elif model_name == "user_knn":
+        recomend = service.get_user_knn_prediction(user_id)
     else:
         raise ModelNotFoundError()
 
