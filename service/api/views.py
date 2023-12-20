@@ -56,6 +56,10 @@ async def get_reco(
         recomend = service.get_user_knn_prediction(user_id)
     elif model_name == "rc_rcts_ann":
         recomend = service.get_rc_rcts_ann(user_id)
+    elif model_name == "autoencoder":
+        recomend = service.get_autoencoder_md(user_id)
+    elif model_name == "rebole":
+        recomend = service.get_recbole_md(user_id)
     else:
         raise ModelNotFoundError()
 
